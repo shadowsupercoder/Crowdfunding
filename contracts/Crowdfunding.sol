@@ -24,7 +24,8 @@ contract Crowdfunding is Ownable {
         string description;
     }
 
-    address public immutable mainToken; // an ERC-20 token is used as a mechanism to accomplish a fundraising
+    // an ERC-20 token is used as a mechanism to accomplish a fundraising
+    address public immutable mainToken;
     CampaignInfo[] public campaigns;
 
     // the total amount of `mainToken` that were pledged by the user for the certain campaign
@@ -112,7 +113,7 @@ contract Crowdfunding is Ownable {
     constructor(address _mainToken, address _owner) {
         require(
             _mainToken != address(0),
-            "The monster address can not be zero"
+            "The main token address can not be zero"
         );
         require(_owner != address(0), "The owner address can not be zero");
         mainToken = _mainToken;
@@ -120,10 +121,11 @@ contract Crowdfunding is Ownable {
     }
 
     /**
-     * @dev Create a campaign for sharing ideas for fundraising
+     * @dev Create a campaign for sharing ideas for fundraising. 
+     * Pay attention there is no check for unique name of campaign, etc.
      * @param _fundingGoal is the amount of `mainToken` to achieve the campaign goal
-     * @param _startDate is the start block of the campaign in seconds
-     * @param _endDate is the end block of the campaign in seconds
+     * @param _startDate is the start date of the campaign in seconds
+     * @param _endDate is the end date of the campaign in seconds
      * @param _name is the name of the campaign
      * @param _description is the small description of the campaign
      */
@@ -200,5 +202,25 @@ contract Crowdfunding is Ownable {
         emit Claimed(msg.sender, _campaignId, _amount, block.timestamp);
 
         IERC20(mainToken).safeTransfer(msg.sender, _amount);
+    }
+
+    /**
+     * @dev Returns all existing campaings
+     * @return indexes is the indexes for the objects (can be used for UI)
+     * @return campaignInfos is the objects with the information about
+     * campaign according to its indexes
+     */
+    function getInfo(
+    ) external view returns (uint256[] memory, CampaignInfo[] memory) {
+
+        uint256[] memory indexes = new uint256[](campaigns.length);
+        CampaignInfo[] memory infos = new CampaignInfo[](campaigns.length);
+
+        for (uint256 i = 0; i < campaigns.length; i++) {
+            indexes[i] = i; // to be sure that UI gets indexes and can reads them properly
+            infos[i] = campaigns[i];
+        }
+
+        return (indexes, infos);
     }
 }
