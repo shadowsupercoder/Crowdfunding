@@ -79,6 +79,19 @@ describe("Crowdfunding", () => {
       expect(await token.balanceOf(alice.address)).to.be.equal(2e12);
     });
 
+    it("Event emits if owner of contract creates campaign", async () => {
+      const currentTime = await time.latest();
+      const startDate = currentTime + ONE_DAY;
+      const endDate = currentTime + 2 * ONE_DAY;
+      const result = await crowdfunding
+        .connect(owner)
+        .createCampaign(fundingGoal, startDate, endDate, name, description);
+
+      await expect(result)
+        .to.emit(crowdfunding, "CampaignCreated")
+        .withArgs(owner.address, fundingGoal, startDate, endDate);
+    });
+
     it("An owner of contract can create campaigns", async () => {
       let result = await crowdfunding.getInfo();
       expect(result[0]).to.be.empty; // check indexes before
@@ -234,6 +247,30 @@ describe("Crowdfunding", () => {
           1e10 // amount
         )
       ).to.be.revertedWith("ERC20: insufficient allowance");
+    });
+
+    it("Event emits if bob make a top up", async () => {
+      // define a campaign
+      const currentTime = await time.latest();
+      const startDate = currentTime + ONE_DAY;
+      const endDate = currentTime + 2 * ONE_DAY;
+      await crowdfunding
+        .connect(owner)
+        .createCampaign(fundingGoal, startDate, endDate, name, description);
+      await token.connect(bob).approve(crowdfunding.address, 1e10);
+
+      await time.increase(ONE_DAY);
+      // top up a campaign by bob
+
+      const result = await crowdfunding.connect(bob).pledge(
+        0, // campaignId
+        1e10 // amount
+      );
+      const txTime = await time.latest();
+
+      await expect(result)
+        .to.emit(crowdfunding, "Pledged")
+        .withArgs(bob.address, 0, 1e10, txTime);
     });
 
     it("Check that bob and alice can top up the active campaign", async () => {
@@ -439,7 +476,7 @@ describe("Crowdfunding", () => {
       await crowdfunding.connect(bob).pledge(1, 1e3);
       await crowdfunding.connect(alice).pledge(1, 1e3);
 
-      const result = await crowdfunding.getInfo();
+      let result = await crowdfunding.getInfo();
       const infos = result[1];
       expect(infos.length).to.be.equal(2);
       expect(infos[0][1]).to.be.equal(1e10); // check fundingGoal1
@@ -465,10 +502,29 @@ describe("Crowdfunding", () => {
 
       await time.increase(4 * ONE_DAY);
 
-      await crowdfunding.connect(alice).claim(0);
-      await crowdfunding.connect(alice).claim(1);
-      await crowdfunding.connect(bob).claim(0);
-      await crowdfunding.connect(bob).claim(1);
+      result = await crowdfunding.connect(alice).claim(0);
+      let txTime = await time.latest();
+      await expect(result)
+        .to.emit(crowdfunding, "Claimed")
+        .withArgs(alice.address, 0, 1e7, txTime);
+
+      result = await crowdfunding.connect(alice).claim(1);
+      txTime = await time.latest();
+      await expect(result)
+        .to.emit(crowdfunding, "Claimed")
+        .withArgs(alice.address, 1, 1e3, txTime);
+
+      result = await crowdfunding.connect(bob).claim(0);
+      txTime = await time.latest();
+      await expect(result)
+        .to.emit(crowdfunding, "Claimed")
+        .withArgs(bob.address, 0, 1e6, txTime);
+
+      result = await crowdfunding.connect(bob).claim(1);
+      txTime = await time.latest();
+      await expect(result)
+        .to.emit(crowdfunding, "Claimed")
+        .withArgs(bob.address, 1, 1e3, txTime);
 
       expect(await crowdfunding.pledgedFunds(bob.address, 0)).to.be.equal(0);
       expect(await crowdfunding.pledgedFunds(bob.address, 1)).to.be.equal(0);
