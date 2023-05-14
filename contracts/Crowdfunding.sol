@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.18;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 /*
  The Crowdfunding smart contract is intended to be a tool for supporting the growth
@@ -62,12 +62,12 @@ contract Crowdfunding is Ownable {
      * @param _campaignId is an ID of a campaign
      */
     modifier isActive(uint256 _campaignId) {
-        require(_campaignId < campaigns.length, "Invalid campaign Id");
+        require(_campaignId < campaigns.length, 'Invalid campaign Id');
         CampaignInfo memory _campaign = campaigns[_campaignId];
         require(
             _campaign.startDate <= block.timestamp &&
                 _campaign.endDate >= block.timestamp,
-            "The campaign is not active"
+            'The campaign is not active'
         );
         _;
     }
@@ -78,7 +78,10 @@ contract Crowdfunding is Ownable {
      * @param _endDate is an ID of a campaign
      */
     modifier isValid(uint256 _startDate, uint256 _endDate) {
-        require(_startDate < _endDate, "The campaign`s end date must be more than start date");
+        require(
+            _startDate < _endDate,
+            'The campaign`s end date must be more than start date'
+        );
         _;
     }
 
@@ -89,8 +92,9 @@ contract Crowdfunding is Ownable {
     modifier isRaised(uint256 _campaignId) {
         CampaignInfo memory _campaign = campaigns[_campaignId];
         require(
-            _campaign.fundingGoal <= _campaign.totalRaised && block.timestamp > _campaign.endDate,
-            "The funding goal has not reached yet"
+            _campaign.fundingGoal <= _campaign.totalRaised &&
+                block.timestamp > _campaign.endDate,
+            'The funding goal has not reached yet'
         );
         _;
     }
@@ -103,11 +107,11 @@ contract Crowdfunding is Ownable {
         CampaignInfo memory _campaign = campaigns[_campaignId];
         require(
             _campaign.fundingGoal > _campaign.totalRaised,
-            "Can not claim. Funds successfully raised"
+            'Can not claim. Funds successfully raised'
         );
         require(
             _campaign.endDate < block.timestamp,
-            "The campaign has not finished yet"
+            'The campaign has not finished yet'
         );
         _;
     }
@@ -115,15 +119,15 @@ contract Crowdfunding is Ownable {
     constructor(address _mainToken, address _owner) {
         require(
             _mainToken != address(0),
-            "The main token address can not be zero"
+            'The main token address can not be zero'
         );
-        require(_owner != address(0), "The owner address can not be zero");
+        require(_owner != address(0), 'The owner address can not be zero');
         mainToken = _mainToken;
         transferOwnership(_owner);
     }
 
     /**
-     * @dev Create a campaign for sharing ideas for fundraising. 
+     * @dev Create a campaign for sharing ideas for fundraising.
      * Pay attention there is no check for unique name of campaign, etc.
      * @param _fundingGoal is the amount of `mainToken` to achieve the campaign goal
      * @param _startDate is the start date of the campaign in seconds
@@ -138,8 +142,8 @@ contract Crowdfunding is Ownable {
         string memory _name,
         string memory _description
     ) external onlyOwner isValid(_startDate, _endDate) {
-        require(campaigns.length < 25, "Maximum campaigns reached");
-        require(_fundingGoal > 0, "The funding goal can not be zero value");
+        require(campaigns.length < 25, 'Maximum campaigns reached');
+        require(_fundingGoal > 0, 'The funding goal can not be zero value');
 
         campaigns.push(
             CampaignInfo({
@@ -165,8 +169,8 @@ contract Crowdfunding is Ownable {
         uint256 _campaignId,
         uint256 _amount
     ) external isActive(_campaignId) {
-        require(_amount > 0, "Pledged amount should be more than zero");
-        
+        require(_amount > 0, 'Pledged amount should be more than zero');
+
         CampaignInfo storage _campaign = campaigns[_campaignId];
 
         _campaign.totalRaised += _amount;
@@ -186,7 +190,10 @@ contract Crowdfunding is Ownable {
         uint256 _campaignId
     ) external onlyOwner isRaised(_campaignId) {
         CampaignInfo storage _campaign = campaigns[_campaignId];
-        require(!_campaign.finished, 'Can not get tokens twice for the same campaign');
+        require(
+            !_campaign.finished,
+            'Can not get tokens twice for the same campaign'
+        );
         uint256 _amount = _campaign.totalRaised;
         _campaign.finished = true;
 
@@ -215,9 +222,11 @@ contract Crowdfunding is Ownable {
      * @return campaignInfos is the objects with the information about
      * campaign according to its indexes
      */
-    function getInfo(
-    ) external view returns (uint256[] memory, CampaignInfo[] memory) {
-
+    function getInfo()
+        external
+        view
+        returns (uint256[] memory, CampaignInfo[] memory)
+    {
         uint256[] memory indexes = new uint256[](campaigns.length);
         CampaignInfo[] memory infos = new CampaignInfo[](campaigns.length);
 

@@ -1,6 +1,6 @@
 import { task } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { Crowdfunding } from "../typechain-types";
+
 
 interface CreateTaskArguments {
   crowdfunding: string;
@@ -42,7 +42,7 @@ task("create", "Creates a new crowdfunding campaign")
         crowdfundingAddress
       );
 
-      await crowdfunding.createCampaign(
+      await crowdfunding.connect(owner).createCampaign(
         args.fundingGoal,
         args.startDate,
         args.endDate,

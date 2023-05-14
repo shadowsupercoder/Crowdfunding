@@ -7,7 +7,7 @@ import * as hre from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Crowdfunding, IceToken } from "../typechain-types";
 
-const { ethers, network } = hre;
+const { ethers } = hre;
 
 describe("Crowdfunding", () => {
   let snapshot: number;
@@ -19,13 +19,12 @@ describe("Crowdfunding", () => {
   let owner: SignerWithAddress;
   let alice: SignerWithAddress;
   let bob: SignerWithAddress;
-  let carl: SignerWithAddress;
 
   let token: IceToken;
   let crowdfunding: Crowdfunding;
 
   before(async () => {
-    [owner, alice, bob, carl] = await ethers.getSigners();
+    [owner, alice, bob] = await ethers.getSigners();
     // Deploy contracts
     const CrowdfundingContract = await ethers.getContractFactory(
       "Crowdfunding"
@@ -92,8 +91,8 @@ describe("Crowdfunding", () => {
         .createCampaign(fundingGoal, startDate, endDate, name, description);
 
       result = await crowdfunding.getInfo();
-      let indexes = result[0];
-      let infos = result[1];
+      const indexes = result[0];
+      const infos = result[1];
       expect(indexes.length).to.be.equal(1);
       expect(infos.length).to.be.equal(1);
       expect(indexes[0]).to.be.equal(0); // check index
@@ -194,7 +193,7 @@ describe("Crowdfunding", () => {
       ).to.be.revertedWith("Maximum campaigns reached");
 
       const result = await crowdfunding.getInfo();
-      let indexes = result[0];
+      const indexes = result[0];
       expect(indexes.length).to.be.equal(25);
     });
 
@@ -212,7 +211,7 @@ describe("Crowdfunding", () => {
       ).to.be.revertedWith("The funding goal can not be zero value");
 
       const result = await crowdfunding.getInfo();
-      let indexes = result[0];
+      const indexes = result[0];
       expect(indexes.length).to.be.equal(0);
     });
   });
@@ -263,7 +262,7 @@ describe("Crowdfunding", () => {
       );
 
       const result = await crowdfunding.getInfo();
-      let infos = result[1];
+      const infos = result[1];
       expect(infos.length).to.be.equal(1);
       expect(infos[0][1]).to.be.equal(1e10); // check fundingGoal
       expect(infos[0][2]).to.be.equal(2e9); // check totalRaise
@@ -295,7 +294,7 @@ describe("Crowdfunding", () => {
       );
 
       const result = await crowdfunding.getInfo();
-      let infos = result[1];
+      const infos = result[1];
       expect(infos.length).to.be.equal(1);
       expect(infos[0][1]).to.be.equal(1e10); // check fundingGoal
       expect(infos[0][2]).to.be.equal(3e10); // check totalRaise
@@ -320,8 +319,8 @@ describe("Crowdfunding", () => {
         1e9 // amount
       );
 
-      let result = await crowdfunding.getInfo();
-      let infos = result[1];
+      const result = await crowdfunding.getInfo();
+      const infos = result[1];
       expect(infos.length).to.be.equal(1);
       expect(infos[0][2]).to.be.equal(1e9); // check totalRaise
 
@@ -441,7 +440,7 @@ describe("Crowdfunding", () => {
       await crowdfunding.connect(alice).pledge(1, 1e3);
 
       const result = await crowdfunding.getInfo();
-      let infos = result[1];
+      const infos = result[1];
       expect(infos.length).to.be.equal(2);
       expect(infos[0][1]).to.be.equal(1e10); // check fundingGoal1
       expect(infos[0][2]).to.be.equal(11e6); // check totalRaise1
@@ -527,7 +526,7 @@ describe("Crowdfunding", () => {
       await crowdfunding.connect(alice).pledge(1, 1e10);
 
       const result = await crowdfunding.getInfo();
-      let infos = result[1];
+      const infos = result[1];
       expect(infos.length).to.be.equal(2);
       expect(infos[0][1]).to.be.equal(1e10); // check fundingGoal1
       expect(infos[0][2]).to.be.equal(11e9); // check totalRaise1

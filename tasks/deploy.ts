@@ -1,6 +1,11 @@
 import { task } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { Crowdfunding } from "../typechain-types";
+
+
+interface DeployTaskArguments {
+  mainToken: string;
+  owner: string;
+}
 
 task("deploy", "Deploy Crowdfunding smart contract")
   .addParam(
@@ -8,7 +13,7 @@ task("deploy", "Deploy Crowdfunding smart contract")
     "The ERC-20 token is used as a mechanism to accomplish a fundraising"
   )
   .addParam("owner", "The owner address for the contract")
-  .setAction(async (args: any, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async (args: DeployTaskArguments, hre: HardhatRuntimeEnvironment) => {
     const Crowdfunding = await hre.ethers.getContractFactory("Crowdfunding");
     const mainTokenAddress = hre.ethers.utils.getAddress(args.mainToken);
     const ownerAddress = hre.ethers.utils.getAddress(args.owner);
