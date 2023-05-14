@@ -16,6 +16,7 @@ contract Crowdfunding is Ownable {
     using SafeERC20 for IERC20;
 
     struct CampaignInfo {
+        bool finished;
         uint256 fundingGoal;
         uint256 totalRaised;
         uint256 startDate;
@@ -88,7 +89,7 @@ contract Crowdfunding is Ownable {
     modifier isRaised(uint256 _campaignId) {
         CampaignInfo memory _campaign = campaigns[_campaignId];
         require(
-            _campaign.fundingGoal >= _campaign.totalRaised,
+            _campaign.fundingGoal <= _campaign.totalRaised && block.timestamp > _campaign.endDate,
             "The funding goal has not reached yet"
         );
         _;
@@ -101,8 +102,8 @@ contract Crowdfunding is Ownable {
     modifier isNotRaised(uint256 _campaignId) {
         CampaignInfo memory _campaign = campaigns[_campaignId];
         require(
-            _campaign.fundingGoal < _campaign.totalRaised,
-            "Funds successfully raised"
+            _campaign.fundingGoal > _campaign.totalRaised,
+            "Can not claim. Funds successfully raised"
         );
         require(
             _campaign.endDate < block.timestamp,
@@ -142,6 +143,7 @@ contract Crowdfunding is Ownable {
 
         campaigns.push(
             CampaignInfo({
+                finished: false,
                 totalRaised: 0,
                 fundingGoal: _fundingGoal,
                 startDate: _startDate,
@@ -184,8 +186,9 @@ contract Crowdfunding is Ownable {
         uint256 _campaignId
     ) external onlyOwner isRaised(_campaignId) {
         CampaignInfo storage _campaign = campaigns[_campaignId];
+        require(!_campaign.finished, 'Can not get tokens twice for the same campaign');
         uint256 _amount = _campaign.totalRaised;
-        _campaign.totalRaised = 0;
+        _campaign.finished = true;
 
         IERC20(mainToken).safeTransfer(msg.sender, _amount);
     }
@@ -219,7 +222,7 @@ contract Crowdfunding is Ownable {
         CampaignInfo[] memory infos = new CampaignInfo[](campaigns.length);
 
         for (uint256 i = 0; i < campaigns.length; i++) {
-            indexes[i] = i; // to be sure that UI gets indexes and can reads them properly
+            indexes[i] = i; // to be sure that UI gets indexes and can read them properly
             infos[i] = campaigns[i];
         }
 
