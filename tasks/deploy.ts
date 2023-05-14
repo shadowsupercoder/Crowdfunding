@@ -16,5 +16,5 @@ task("deploy", "Deploy Crowdfunding smart contract")
     const contract = await Crowdfunding.deploy(mainTokenAddress, ownerAddress);
     await contract.deployed();
 
-    console.log(`Crowdfunding deployed at: ${contract.address}`);
+    console.log(`✅ Crowdfunding deployed at: ${contract.address}`);
   });
