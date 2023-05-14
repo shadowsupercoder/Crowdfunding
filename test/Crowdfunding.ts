@@ -46,8 +46,6 @@ describe("Crowdfunding", () => {
     await token.connect(owner).mint(3e12);
     await token.connect(owner).transfer(bob.address, 1e12);
     await token.connect(owner).transfer(alice.address, 2e12);
-    await token.connect(bob).approve(crowdfunding.address, 1e12);
-    await token.connect(alice).approve(crowdfunding.address, 2e12);
   });
 
   beforeEach(async () => {
@@ -214,6 +212,157 @@ describe("Crowdfunding", () => {
       const result = await crowdfunding.getInfo();
       let indexes = result[0];
       expect(indexes.length).to.be.equal(0);
+    });
+  });
+
+  describe.only("Fund a campaign", () => {
+    it("Check that bob can not top up the campaign without approve", async () => {
+      // define a campaign
+      const currentTime = await time.latest();
+      const startDate = currentTime + ONE_DAY;
+      const endDate = currentTime + 2 * ONE_DAY;
+      await crowdfunding
+        .connect(owner)
+        .createCampaign(fundingGoal, startDate, endDate, name, description);
+
+      await time.increase(ONE_DAY);
+      // top up a campaign by bob
+      await expect(
+        crowdfunding.connect(bob).pledge(
+          0, // campaignId
+          1e10 // amount
+        )
+      ).to.be.revertedWith("ERC20: insufficient allowance");
+    });
+
+    it("Check that bob and alice can top up the active campaign", async () => {
+      // define a campaign
+      const currentTime = await time.latest();
+      const startDate = currentTime + ONE_DAY;
+      const endDate = currentTime + 2 * ONE_DAY;
+      await crowdfunding
+        .connect(owner)
+        .createCampaign(fundingGoal, startDate, endDate, name, description);
+
+      await time.increase(ONE_DAY);
+
+      // top up a campaign
+      await token.connect(bob).approve(crowdfunding.address, 1e9);
+      await token.connect(alice).approve(crowdfunding.address, 1e9);
+
+      await crowdfunding.connect(bob).pledge(
+        0, // campaignId
+        1e9 // amount
+      );
+
+      await crowdfunding.connect(alice).pledge(
+        0, // campaignId
+        1e9 // amount
+      );
+
+      const result = await crowdfunding.getInfo();
+      let infos = result[1];
+      expect(infos.length).to.be.equal(1);
+      expect(infos[0][0]).to.be.equal(1e10); // check fundingGoal
+      expect(infos[0][1]).to.be.equal(2e9); // check totalRaise
+    });
+
+    it("Alice can top up the campaign that already reached fundingGoal but not its end time", async () => {
+      // define a campaign
+      const currentTime = await time.latest();
+      const startDate = currentTime + ONE_DAY;
+      const endDate = currentTime + 2 * ONE_DAY;
+      await crowdfunding
+        .connect(owner)
+        .createCampaign(fundingGoal, startDate, endDate, name, description);
+
+      await time.increase(ONE_DAY);
+
+      // top up a campaign
+      await token.connect(bob).approve(crowdfunding.address, 2e10);
+      await token.connect(alice).approve(crowdfunding.address, 1e10);
+
+      await crowdfunding.connect(bob).pledge(
+        0, // campaignId
+        2e10 // amount
+      );
+
+      await crowdfunding.connect(alice).pledge(
+        0, // campaignId
+        1e10 // amount
+      );
+
+      const result = await crowdfunding.getInfo();
+      let infos = result[1];
+      expect(infos.length).to.be.equal(1);
+      expect(infos[0][0]).to.be.equal(1e10); // check fundingGoal
+      expect(infos[0][1]).to.be.equal(3e10); // check totalRaise
+    });
+
+    it("Check that alice can not top up non-active campaign", async () => {
+      // define a campaign
+      const currentTime = await time.latest();
+      const startDate = currentTime + ONE_DAY;
+      const endDate = currentTime + 2 * ONE_DAY;
+      await crowdfunding
+        .connect(owner)
+        .createCampaign(fundingGoal, startDate, endDate, name, description);
+
+      await time.increase(3 * ONE_DAY);
+
+      // top up a campaign
+      await token.connect(alice).approve(crowdfunding.address, 1e10);
+
+      await expect(
+        crowdfunding.connect(alice).pledge(
+          0, // campaignId
+          1e10 // amount
+        )
+      ).to.be.revertedWith("The campaign is not active");
+    });
+
+    it("Check that alice can not top up a campaign using 0 amount as parameter", async () => {
+      // define a campaign
+      const currentTime = await time.latest();
+      const startDate = currentTime + ONE_DAY;
+      const endDate = currentTime + 2 * ONE_DAY;
+      await crowdfunding
+        .connect(owner)
+        .createCampaign(fundingGoal, startDate, endDate, name, description);
+
+      await time.increase(ONE_DAY);
+
+      // top up a campaign
+      await token.connect(alice).approve(crowdfunding.address, 1e10);
+
+      await expect(
+        crowdfunding.connect(alice).pledge(
+          0, // campaignId
+          0 // amount
+        )
+      ).to.be.revertedWith("Pledged amount should be more than zero");
+    });
+
+    it("Check that alice can not top up a non-exist campaign", async () => {
+      // define a campaign
+      const currentTime = await time.latest();
+      const startDate = currentTime + ONE_DAY;
+      const endDate = currentTime + 2 * ONE_DAY;
+      await crowdfunding
+        .connect(owner)
+        .createCampaign(fundingGoal, startDate, endDate, name, description);
+
+      await time.increase(3 * ONE_DAY);
+
+      // top up a campaign
+      await token.connect(alice).approve(crowdfunding.address, 1e10);
+
+      await expect(
+        crowdfunding.connect(alice).pledge(
+          10, // campaignId
+          1e10 // amount
+        )
+      ).to.be.revertedWith("Invalid campaign Id");
     });
   });
 });

@@ -57,10 +57,11 @@ contract Crowdfunding is Ownable {
     );
 
     /**
-     * @dev Raise an error if the timeline for the certain campaign is not active
+     * @dev Raise an error if the certain campaign is not active
      * @param _campaignId is an ID of a campaign
      */
     modifier isActive(uint256 _campaignId) {
+        require(_campaignId < campaigns.length, "Invalid campaign Id");
         CampaignInfo memory _campaign = campaigns[_campaignId];
         require(
             _campaign.startDate <= block.timestamp &&
@@ -163,6 +164,7 @@ contract Crowdfunding is Ownable {
         uint256 _amount
     ) external isActive(_campaignId) {
         require(_amount > 0, "Pledged amount should be more than zero");
+        
         CampaignInfo storage _campaign = campaigns[_campaignId];
 
         _campaign.totalRaised += _amount;
