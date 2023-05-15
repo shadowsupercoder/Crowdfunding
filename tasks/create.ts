@@ -1,12 +1,11 @@
 import { task } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-
 interface CreateTaskArguments {
   crowdfunding: string;
-  fundingGoal: number;
-  startDate: number;
-  endDate: number;
+  fundingGoal: string;
+  startDate: string;
+  endDate: string;
   name: string;
   description: string;
 }
@@ -42,13 +41,15 @@ task("create", "Creates a new crowdfunding campaign")
         crowdfundingAddress
       );
 
-      await crowdfunding.connect(owner).createCampaign(
-        args.fundingGoal,
-        args.startDate,
-        args.endDate,
-        args.name,
-        args.description
-      );
+      await crowdfunding
+        .connect(owner)
+        .createCampaign(
+          args.fundingGoal,
+          args.startDate,
+          args.endDate,
+          args.name,
+          args.description
+        );
 
       console.log("✅ Campaign Created");
     }
