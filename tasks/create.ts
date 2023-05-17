@@ -32,15 +32,8 @@ task("create", "Creates a new crowdfunding campaign")
   .setAction(
     async (args: CreateTaskArguments, hre: HardhatRuntimeEnvironment) => {
       const [owner] = await hre.ethers.getSigners();
-      const crowdfundingAddress = hre.ethers.utils.getAddress(
-        args.crowdfunding
-      );
-
-      const crowdfunding = await hre.ethers.getContractAt(
-        "Crowdfunding",
-        crowdfundingAddress
-      );
-
+      const ca = hre.ethers.utils.getAddress(args.crowdfunding);
+      const crowdfunding = await hre.ethers.getContractAt("Crowdfunding", ca);
       await crowdfunding
         .connect(owner)
         .createCampaign(
@@ -50,7 +43,6 @@ task("create", "Creates a new crowdfunding campaign")
           args.name,
           args.description
         );
-
-      console.log("✅ Campaign Created");
+      console.log(`\t✔️  The '${args.name}' campaign has been created`);
     }
   );

@@ -2,30 +2,38 @@ import { task } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 interface ClaimTaskArguments {
-  campaignId: number;
+  from: string;
+  campaignId: string;
   crowdfunding: string;
 }
 
-task("claim", "Creates a new crowdfunding campaign")
+task("claim", "Claim tokens from the crowdfunding SC")
+  .addParam("from", "The sender address")
   .addParam(
     "campaignId",
-    "The campaign Id that was already created by the owner"
+    "The campaign Id that was already exists in crowdfunding SC"
   )
   .addParam("crowdfunding", "The crowdfunding address")
   .setAction(
     async (args: ClaimTaskArguments, hre: HardhatRuntimeEnvironment) => {
-      const [, bob] = await hre.ethers.getSigners();
-      const crowdfundingAddress = hre.ethers.utils.getAddress(
-        args.crowdfunding
-      );
-
+      const fromAddr = hre.ethers.utils.getAddress(args.from);
+      const from = await hre.ethers.getSigner(fromAddr);
+      const fromShort = fromAddr.substr(0, 10);
+      const crowdfundingAddr = hre.ethers.utils.getAddress(args.crowdfunding);
       const crowdfunding = await hre.ethers.getContractAt(
         "Crowdfunding",
-        crowdfundingAddress
+        crowdfundingAddr
       );
 
-      await crowdfunding.connect(bob).claim(args.campaignId);
-
-      console.log("✅ Tokens claimed");
+      let tx = await crowdfunding.connect(from).claim(args.campaignId);
+      // TODO: make negative condition if tx failed
+      let receipt = await tx.wait();
+      const event = receipt.events?.filter((x) => {return x.event == "Claimed"});
+      const claimedAmount = event[0].args[2].toString();
+      console.log(
+      `\t✔️  \x1b[33m${claimedAmount}\x1b[0m`,
+      `Ice tokens were claimed from '${args.campaignId}' campaignId by the`,
+      `\x1b[32m${fromShort}..\x1b[0m address`
+    );
     }
   );

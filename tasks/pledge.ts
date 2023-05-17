@@ -2,34 +2,40 @@ import { task } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 interface PledgeTaskArguments {
+  from: string;
+  crowdfunding: string;
   campaignId: string;
   amount: string;
-  crowdfunding: string;
 }
 
-task("pledge", "Fund a campaign by the user")
+task("pledge", "Transfer tokens from the sender to the crowdfunding SC")
+  .addParam("from", "The sender address")
+  .addParam("crowdfunding", "The crowdfunding address")
   .addParam(
     "campaignId",
     "The campaign Id that was already created by the owner"
   )
   .addParam(
     "amount",
-    "The amount of `mainToken` that user want to transfer to the SC"
+    "The amount of tokens that user want to transfer to the SC"
   )
-  .addParam("crowdfunding", "The crowdfunding address")
+
   .setAction(
     async (args: PledgeTaskArguments, hre: HardhatRuntimeEnvironment) => {
-      const [, bob] = await hre.ethers.getSigners();
-      const crowdfundingAddress = hre.ethers.utils.getAddress(
-        args.crowdfunding
-      );
+      const fromAddr = hre.ethers.utils.getAddress(args.from);
+      const from = await hre.ethers.getSigner(fromAddr);
+      const fromShort = fromAddr.substr(0, 10);
+      const crowdfundingAddr = hre.ethers.utils.getAddress(args.crowdfunding);
       const crowdfunding = await hre.ethers.getContractAt(
         "Crowdfunding",
-        crowdfundingAddress
+        crowdfundingAddr
       );
 
-      await crowdfunding.connect(bob).pledge(args.campaignId, args.amount);
-
-      console.log("✅ Tokens pledged");
+      await crowdfunding.connect(from).pledge(args.campaignId, args.amount);
+      console.log(
+      `\t✔️  \x1b[33m${args.amount}\x1b[0m`,
+      `Ice tokens were pledged to '${args.campaignId}' campaignId by the`,
+      `\x1b[32m${fromShort}..\x1b[0m address`
+    );
     }
   );
