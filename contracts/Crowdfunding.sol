@@ -208,7 +208,7 @@ contract Crowdfunding is Ownable {
     function claim(uint256 _campaignId) external isNotRaised(_campaignId) {
         uint256 _amount = pledgedFunds[msg.sender][_campaignId];
         pledgedFunds[msg.sender][_campaignId] = 0;
-        campaigns[_campaignId].totalRaised -= _amount;
+        // campaigns[_campaignId].totalRaised -= _amount;
 
         emit Claimed(msg.sender, _campaignId, _amount, block.timestamp);
 
