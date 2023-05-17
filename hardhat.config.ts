@@ -1,13 +1,17 @@
 import * as dotenv from 'dotenv';
 
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
-import 'hardhat-gas-reporter';
-
 import './tasks/deploy';
 import './tasks/create';
 import './tasks/claim';
 import './tasks/getTokens';
+import './tasks/tokenActions';
+import './tasks/pledge';
+
+import '@typechain/hardhat';
+import '@nomiclabs/hardhat-ethers';
+import '@nomicfoundation/hardhat-toolbox';
+import '@nomicfoundation/hardhat-chai-matchers';
 
 dotenv.config();
 
@@ -24,5 +28,3 @@ const config: HardhatUserConfig = {
 };
 
 export default config;
-
-
