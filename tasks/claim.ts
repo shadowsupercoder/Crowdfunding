@@ -3,14 +3,14 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 interface ClaimTaskArguments {
   from: string;
-  campaignId: string;
+  id: string;
   crowdfunding: string;
 }
 
 task("claim", "Claim tokens from the crowdfunding SC")
   .addParam("from", "The sender address")
   .addParam(
-    "campaignId",
+    "id",
     "The campaign Id that was already exists in crowdfunding SC"
   )
   .addParam("crowdfunding", "The crowdfunding address")
@@ -25,14 +25,14 @@ task("claim", "Claim tokens from the crowdfunding SC")
         crowdfundingAddr
       );
 
-      const tx = await crowdfunding.connect(from).claim(args.campaignId);
+      const tx = await crowdfunding.connect(from).claim(args.id);
       // TODO: make negative condition if tx failed
       const receipt = await tx.wait();
       const event = receipt.events?.filter((x) => {return x.event == "Claimed"});
       const claimedAmount = event[0].args[2].toString();
       console.log(
       `\t✔️  \x1b[33m${claimedAmount}\x1b[0m`,
-      `Ice tokens were claimed from '${args.campaignId}' campaignId by the`,
+      `Ice tokens were claimed from '${args.id}' campaignId by the`,
       `\x1b[32m${fromShort}..\x1b[0m address`
     );
     }

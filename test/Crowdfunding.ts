@@ -187,6 +187,23 @@ describe("Crowdfunding", () => {
       await expect(crowdfunding.campaigns(0)).to.be.reverted;
     });
 
+    it("Owner can not create a campaign if start date < current date", async () => {
+      await expect(crowdfunding.campaigns(0)).to.be.reverted;
+
+      const currentTime = await time.latest();
+      const startDate = currentTime - 2 * ONE_DAY;
+      const endDate = currentTime + ONE_DAY;
+      await expect(
+        crowdfunding
+          .connect(owner)
+          .createCampaign(fundingGoal, startDate, endDate, name, description)
+      ).to.be.revertedWith(
+        "The campaign`s start date must be more than current date"
+      );
+
+      await expect(crowdfunding.campaigns(0)).to.be.reverted;
+    });
+
     it("Can not create a new campaign is max reached (25)", async () => {
       await expect(crowdfunding.campaigns(0)).to.be.reverted;
 
