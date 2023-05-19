@@ -23,7 +23,10 @@ Execute: `yarn hardhat compile`
 
 ### Run tests
 
-Use `yarn test` to check tests created for the Crowdfunding smart contract and its tasks for easy deploymanet and easy communication with smart contracts(Crowdfunding, IceToken) without UI. `Tasks.ts` tests includes two DEMOs to fast check if the functionality works as expected. Attention! The `IceToken` was not tested!
+Use `yarn test` to check tests created for the Crowdfunding smart contract and its tasks for easy deploymanet and easy communication with smart contracts(Crowdfunding, IceToken) without UI. In the `test/Tasks.ts` file are stored two DEMOs to fast check if the functionality works as expected. DEMOs are displayed balances and actions for two scenarios:
+- DEMO 1: the user can claim his funds back if funds goal isn't met
+- DEMO 2: the owner can get tokens from SC if funds goal is met
+Attention! The `IceToken` was not tested!
 
 ### Tests coverage
 
