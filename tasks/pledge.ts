@@ -4,7 +4,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 interface PledgeTaskArguments {
   from: string;
   crowdfunding: string;
-  campaignId: string;
+  id: string;
   amount: string;
 }
 
@@ -12,7 +12,7 @@ task("pledge", "Transfer tokens from the sender to the crowdfunding SC")
   .addParam("from", "The sender address")
   .addParam("crowdfunding", "The crowdfunding address")
   .addParam(
-    "campaignId",
+    "id",
     "The campaign Id that was already created by the owner"
   )
   .addParam(
@@ -31,10 +31,10 @@ task("pledge", "Transfer tokens from the sender to the crowdfunding SC")
         crowdfundingAddr
       );
 
-      await crowdfunding.connect(from).pledge(args.campaignId, args.amount);
+      await crowdfunding.connect(from).pledge(args.id, args.amount);
       console.log(
       `\t✔️  \x1b[33m${args.amount}\x1b[0m`,
-      `Ice tokens were pledged to '${args.campaignId}' campaignId by the`,
+      `Ice tokens were pledged to '${args.id}' campaignId by the`,
       `\x1b[32m${fromShort}..\x1b[0m address`
     );
     }

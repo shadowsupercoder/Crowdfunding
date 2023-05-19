@@ -198,7 +198,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("pledge", {
       from: bob.address,
       crowdfunding: crowdfundingAddr,
-      campaignId: "0",
+      id: "0",
       amount: bobBalance.toString(),
     });
 
@@ -214,7 +214,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("pledge", {
       from: alice.address,
       crowdfunding: crowdfundingAddr,
-      campaignId: "0",
+      id: "0",
       amount: (aliceBalance / 2).toString(),
     });
 
@@ -230,7 +230,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("pledge", {
       from: alice.address,
       crowdfunding: crowdfundingAddr,
-      campaignId: "1",
+      id: "1",
       amount: (aliceBalance / 2).toString(),
     });
 
@@ -282,7 +282,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("claim", {
       from: bob.address,
       crowdfunding: crowdfundingAddr,
-      campaignId: "0",
+      id: "0",
     });
     expect(await token.balanceOf(crowdfundingAddr)).to.be.equal(
       1e10 / 2 // 5e9
@@ -292,7 +292,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("claim", {
       from: alice.address,
       crowdfunding: crowdfundingAddr,
-      campaignId: "0",
+      id: "0",
     });
     expect(await token.balanceOf(crowdfundingAddr)).to.be.equal(
       1e10 / 2 / 2 // 25e8
@@ -302,7 +302,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("claim", {
       from: alice.address,
       crowdfunding: crowdfundingAddr,
-      campaignId: "1",
+      id: "1",
     });
     expect(await token.balanceOf(crowdfundingAddr)).to.be.equal(0);
 
@@ -429,7 +429,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("pledge", {
       from: bob.address,
       crowdfunding: crowdfundingAddr,
-      campaignId: "0",
+      id: "0",
       amount: bobBalance.toString(),
     });
 
@@ -445,7 +445,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("pledge", {
       from: alice.address,
       crowdfunding: crowdfundingAddr,
-      campaignId: "0",
+      id: "0",
       amount: (aliceBalance / 2).toString(),
     });
 
@@ -461,7 +461,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("pledge", {
       from: alice.address,
       crowdfunding: crowdfundingAddr,
-      campaignId: "1",
+      id: "1",
       amount: (aliceBalance / 2).toString(),
     });
 
@@ -513,7 +513,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("getTokens", {
       from: owner.address,
       crowdfunding: crowdfundingAddr,
-      campaignId: "0",
+      id: "0",
     });
     expect(await token.balanceOf(crowdfundingAddr)).to.be.equal(
       totalAmount - (amountToDevBob + amountToDevAlice) // 75e8
@@ -524,7 +524,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
       run("getTokens", {
         from: owner.address,
         crowdfunding: crowdfundingAddr,
-        campaignId: "1",
+        id: "1",
       })
     ).revertedWith("The funding goal has not reached yet");
 
@@ -539,7 +539,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("claim", {
       from: alice.address,
       crowdfunding: crowdfundingAddr,
-      campaignId: "1",
+      id: "1",
     });
 
     const ownerBal = await token.balanceOf(owner.address);
