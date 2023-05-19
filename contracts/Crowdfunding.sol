@@ -16,6 +16,7 @@ contract Crowdfunding is Ownable {
     using SafeERC20 for IERC20;
 
     struct CampaignInfo {
+        // sets as `true` only in case if owner claimed funds (goal for the fundraising is met)
         bool finished;
         uint256 fundingGoal;
         uint256 totalRaised;
@@ -209,7 +210,7 @@ contract Crowdfunding is Ownable {
         uint256 _amount = _campaign.totalRaised;
         _campaign.finished = true;
 
-        emit ClaimedByOwner(msg.sender,_campaignId, _amount, block.timestamp);
+        emit ClaimedByOwner(msg.sender, _campaignId, _amount, block.timestamp);
 
         IERC20(mainToken).safeTransfer(msg.sender, _amount);
     }

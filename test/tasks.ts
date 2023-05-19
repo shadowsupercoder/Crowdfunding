@@ -110,7 +110,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     expect(result[2]).to.be.equal(0); // totalRaise
 
     let ownerBalBefore = await token.balanceOf(owner.address);
-    
+
     // mint fundingGoal tokens to the owner
     await run("mint", {
       token: tokenAddr,
@@ -352,9 +352,9 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     expect(ownerBalAfter).to.be.equal(totalAmount);
     expect(fundingGoal * 4).to.be.equal(ownerBalAfter - ownerBalBefore);
 
-    console.log(`\t\t 📜 Bob\'s full address is \x1b[32m${bob.address}\x1b[0m`);
+    console.log(`\t\t 📜 Bob's full address is \x1b[32m${bob.address}\x1b[0m`);
     console.log(
-      `\t\t 📜 Alice\'s full address is \x1b[32m${alice.address}\x1b[0m`
+      `\t\t 📜 Alice's full address is \x1b[32m${alice.address}\x1b[0m`
     );
     ownerBalBefore = await token.balanceOf(owner.address);
     const bobBalanceBefore = await token.balanceOf(bob.address);
