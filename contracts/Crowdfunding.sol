@@ -87,6 +87,10 @@ contract Crowdfunding is Ownable {
      */
     modifier isValid(uint256 _startDate, uint256 _endDate) {
         require(
+            _startDate > block.timestamp,
+            'The campaign`s start date must be more than current date'
+        );
+        require(
             _startDate < _endDate,
             'The campaign`s end date must be more than start date'
         );
