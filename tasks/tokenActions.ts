@@ -7,17 +7,10 @@ interface MintArguments {
   amount: string;
 }
 
-interface TransferFromArguments {
+interface BaseTaskArguments {
   token: string;
   from: string;
   to: string;
-  amount: string;
-}
-
-interface ApproveTaskArguments {
-  token: string;
-  from: string;
-  crowdfunding: string;
   amount: string;
 }
 
@@ -33,7 +26,7 @@ task("mint", "Mint an IceToken to the owner")
     const ownerShort = owner.address.substr(0, 10);
     console.log(
       `\t✔️  \x1b[33m${args.amount}\x1b[0m`,
-      'Ice tokens were minted to the owner address:',
+      "Ice tokens were minted to the owner address:",
       `\x1b[32m${ownerShort}..\x1b[0m`
     );
   });
@@ -43,48 +36,46 @@ task("transferFrom", "Transfer tokens from one addres to another")
   .addParam("from", "The sender address")
   .addParam("to", "The receiver address")
   .addParam("amount", "Amount of tokens in wei that should be minted")
-  .setAction(async (args: TransferFromArguments, hre: HardhatRuntimeEnvironment) => {
-    const tokenAddr = hre.ethers.utils.getAddress(args.token);
-    const fromAddr = hre.ethers.utils.getAddress(args.from);
-    const toAddr = hre.ethers.utils.getAddress(args.to);
-    const token = await hre.ethers.getContractAt("IceToken", tokenAddr);
-    const from = await hre.ethers.getSigner(fromAddr);
-    const to = await hre.ethers.getSigner(toAddr);
-
-    await token.connect(from).transfer(to.address, args.amount);
-
-    const fromShort = fromAddr.substr(0, 10);
-    const toShort = toAddr.substr(0, 10);
-    console.log(
-      `\t✔️  \x1b[33m${args.amount}\x1b[0m Ice tokens were transfered from`,
-      `\x1b[32m${fromShort}..\x1b[0m to \x1b[32m${toShort}..\x1b[0m account`
-    );
-  });
-
-task("approve", "Approve Ice tokens from sender for crowdfunding smart contract")
-  .addParam("token", "The IceToken address")
-  .addParam("from", "The sender address")
-  .addParam("crowdfunding", "The crowdfunding address")
-  .addParam("amount", "Amount of tokens in wei that should be approved")
   .setAction(
-    async (args: ApproveTaskArguments, hre: HardhatRuntimeEnvironment) => {
+    async (args: BaseTaskArguments, hre: HardhatRuntimeEnvironment) => {
       const tokenAddr = hre.ethers.utils.getAddress(args.token);
       const fromAddr = hre.ethers.utils.getAddress(args.from);
-      const crowdfundingAddress = hre.ethers.utils.getAddress(
-        args.crowdfunding
+      const toAddr = hre.ethers.utils.getAddress(args.to);
+      const token = await hre.ethers.getContractAt("IceToken", tokenAddr);
+      const from = await hre.ethers.getSigner(fromAddr);
+      const to = await hre.ethers.getSigner(toAddr);
+
+      await token.connect(from).transfer(to.address, args.amount);
+
+      const fromShort = fromAddr.substr(0, 10);
+      const toShort = toAddr.substr(0, 10);
+      console.log(
+        `\t✔️  \x1b[33m${args.amount}\x1b[0m Ice tokens were transfered from`,
+        `\x1b[32m${fromShort}..\x1b[0m to \x1b[32m${toShort}..\x1b[0m account`
       );
+    }
+  );
+
+task("approve", "Approve Ice tokens from sender for spender")
+  .addParam("token", "The IceToken address")
+  .addParam("from", "The sender address")
+  .addParam("to", "The spender address")
+  .addParam("amount", "Amount of tokens in wei that should be approved")
+  .setAction(
+    async (args: BaseTaskArguments, hre: HardhatRuntimeEnvironment) => {
+      const tokenAddr = hre.ethers.utils.getAddress(args.token);
+      const fromAddr = hre.ethers.utils.getAddress(args.from);
+      const toAddress = hre.ethers.utils.getAddress(args.to);
       const token = await hre.ethers.getContractAt("IceToken", tokenAddr);
       const from = await hre.ethers.getSigner(fromAddr);
 
-      await token
-        .connect(from)
-        .approve(crowdfundingAddress, args.amount);
+      await token.connect(from).approve(toAddress, args.amount);
 
       const fromShort = fromAddr.substr(0, 10);
       console.log(
         `\t✔️  \x1b[33m${args.amount}\x1b[0m Ice tokens were approved by`,
         `\x1b[32m${fromShort}..\x1b[0m`,
-         'for the crowdfunding SC'
+        "for the spender"
       );
     }
   );

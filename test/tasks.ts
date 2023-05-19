@@ -71,10 +71,10 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     // create the "Development" campaign
     // TODO: check why the type in tasks requires string instead of numbers.
     await run("create", {
-      crowdfunding: crowdfundingAddr,
-      fundingGoal: fundingGoal.toString(),
-      startDate: startDate.toString(),
-      endDate: endDate.toString(),
+      cf: crowdfundingAddr,
+      goal: fundingGoal.toString(),
+      start: startDate.toString(),
+      end: endDate.toString(),
       name: "Development",
       description: "Funds to create demo v1",
     });
@@ -83,10 +83,10 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     startDate = currentTime + ONE_DAY; // next day
     endDate = currentTime + 5 * ONE_DAY; // current datetime + 5 days
     await run("create", {
-      crowdfunding: crowdfundingAddr,
-      fundingGoal: fundingGoal.toString(),
-      startDate: startDate.toString(),
-      endDate: endDate.toString(),
+      cf: crowdfundingAddr,
+      goal: fundingGoal.toString(),
+      start: startDate.toString(),
+      end: endDate.toString(),
       name: "New",
       description: "2 months of investigation",
     });
@@ -166,7 +166,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("approve", {
       token: tokenAddr,
       from: bob.address,
-      crowdfunding: crowdfundingAddr,
+      to: crowdfundingAddr,
       amount: (fundingGoal / 2).toString(),
     });
     expect(await token.allowance(bob.address, crowdfundingAddr)).to.be.equal(
@@ -181,7 +181,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("approve", {
       token: tokenAddr,
       from: alice.address,
-      crowdfunding: crowdfundingAddr,
+      to: crowdfundingAddr,
       amount: (fundingGoal / 2).toString(),
     });
 
@@ -399,7 +399,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("approve", {
       token: tokenAddr,
       from: bob.address,
-      crowdfunding: crowdfundingAddr,
+      to: crowdfundingAddr,
       amount: amountToDevBob.toString(),
     });
     expect(await token.allowance(bob.address, crowdfundingAddr)).to.be.equal(
@@ -413,7 +413,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     await run("approve", {
       token: tokenAddr,
       from: alice.address,
-      crowdfunding: crowdfundingAddr,
+      to: crowdfundingAddr,
       amount: (amountToDevAlice + amountToNewAlice).toString(),
     });
     expect(await token.allowance(alice.address, crowdfundingAddr)).to.be.equal(
