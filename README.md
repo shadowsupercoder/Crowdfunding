@@ -84,8 +84,8 @@ To check Crowdfunding smart contract functionality use the following steps:
 ```
   yarn hardhat transferFrom --network localhost \
     --token <deployed IceToken address> \
-    --from <the sender address of the tokens>
-    --to <the receiver address of the tokens>
+    --from <the sender address of the tokens> \
+    --to <the receiver address of the tokens> \
     --amount <any amount in wei that a `from` address has>
 ```
 7. Approve Ice tokens from `sender` for `spender` address. A `sender` is an account that already have some amount of Ice tokens but he is not the owner of smart contracts. To fund some tocens to the Crowdfunding SC put a Crowdfunding address as a value for `--to` parameter. Use the following command:
@@ -93,32 +93,32 @@ To check Crowdfunding smart contract functionality use the following steps:
 ```
   yarn hardhat approve --network localhost \
     --token <deployed IceToken address> \
-    --from <the sender address of the tokens>
-    --to <the spender address of the tokens>
+    --from <the sender address of the tokens> \
+    --to <the spender address of the tokens> \
     --amount <any amount in wei that should be approved>
 ```
 8. Transfer tokens from the `sender` to the crowdfunding SC using the following command:
 
 ```
   yarn hardhat pledge --network localhost \
-    --from <the sender address of the tokens>
-    --crowdfunding <deployed Crowdfunding address>
-    --id <The campaign Id that was already created by the Crowdfunding SC>
+    --from <the sender address of the tokens> \
+    --crowdfunding <deployed Crowdfunding address> \
+    --id <The campaign Id that was already created by the Crowdfunding SC> \
     --amount <any amount in wei that should be transferred to the Crowdfunding address>
 ```
 9. Claim all tokens from the Crowdfunding SC for the certain campaign Id if the raise isn't met. Use the following command:
 
 ```
   yarn hardhat claim --network localhost \
-    --from <the address of the token owner>
-    --crowdfunding <deployed Crowdfunding address>
+    --from <the address of the token owner> \
+    --crowdfunding <deployed Crowdfunding address> \
     --id <The campaign Id that was already created by the Crowdfunding SC>
 ```
 10. Claim all tokens from the Crowdfunding SC for the certain campaign Id if the raise is met. Only owner can execute this function. Use the following command:
 
 ```
   yarn hardhat getTokens --network localhost \
-    --from <the owner address of the Crowdfunding SC>
-    --crowdfunding <deployed Crowdfunding address>
+    --from <the owner address of the Crowdfunding SC> \
+    --crowdfunding <deployed Crowdfunding address> \
     --id <The campaign Id that was already created by the Crowdfunding SC>
 ```
