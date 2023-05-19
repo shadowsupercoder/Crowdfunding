@@ -715,8 +715,17 @@ describe("Crowdfunding", () => {
         "Ownable: caller is not the owner"
       );
 
-      await crowdfunding.connect(owner).getTokens(0);
-      await crowdfunding.connect(owner).getTokens(1);
+      result = await crowdfunding.connect(owner).getTokens(0);
+      let txTime = await time.latest();
+      await expect(result)
+        .to.emit(crowdfunding, "ClaimedByOwner")
+        .withArgs(owner.address, 0, 101e9, txTime);
+
+      result = await crowdfunding.connect(owner).getTokens(1);
+      txTime = await time.latest();
+      await expect(result)
+        .to.emit(crowdfunding, "ClaimedByOwner")
+        .withArgs(owner.address, 1, 2e10, txTime);
 
       expect(await token.balanceOf(owner.address)).to.be.equal(
         ownerBalanceBefore + expectedBalance

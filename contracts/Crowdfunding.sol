@@ -57,6 +57,14 @@ contract Crowdfunding is Ownable {
         uint256 dateTime
     );
 
+    // emits when an owner gets funds from the smart contract
+    event ClaimedByOwner(
+        address indexed receiver,
+        uint256 campaignId,
+        uint256 amount,
+        uint256 dateTime
+    );
+
     /**
      * @dev Raise an error if the certain campaign is not active
      * @param _campaignId is an ID of a campaign
@@ -196,6 +204,8 @@ contract Crowdfunding is Ownable {
         );
         uint256 _amount = _campaign.totalRaised;
         _campaign.finished = true;
+
+        emit ClaimedByOwner(msg.sender,_campaignId, _amount, block.timestamp);
 
         IERC20(mainToken).safeTransfer(msg.sender, _amount);
     }

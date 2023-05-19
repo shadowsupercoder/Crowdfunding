@@ -25,7 +25,6 @@ task("mint", "Mint an IceToken to the owner")
   .addParam("token", "The IceToken address")
   .addParam("amount", "Amount of tokens in wei that should be minted")
   .setAction(async (args: MintArguments, hre: HardhatRuntimeEnvironment) => {
-    const IceToken = await hre.ethers.getContractFactory("IceToken");
     const tokenAddress = hre.ethers.utils.getAddress(args.token);
     const token = await hre.ethers.getContractAt("IceToken", tokenAddress);
     const [owner] = await hre.ethers.getSigners();
@@ -45,7 +44,6 @@ task("transferFrom", "Transfer tokens from one addres to another")
   .addParam("to", "The receiver address")
   .addParam("amount", "Amount of tokens in wei that should be minted")
   .setAction(async (args: TransferFromArguments, hre: HardhatRuntimeEnvironment) => {
-    const IceToken = await hre.ethers.getContractFactory("IceToken");
     const tokenAddr = hre.ethers.utils.getAddress(args.token);
     const fromAddr = hre.ethers.utils.getAddress(args.from);
     const toAddr = hre.ethers.utils.getAddress(args.to);
@@ -70,7 +68,6 @@ task("approve", "Approve Ice tokens from sender for crowdfunding smart contract"
   .addParam("amount", "Amount of tokens in wei that should be approved")
   .setAction(
     async (args: ApproveTaskArguments, hre: HardhatRuntimeEnvironment) => {
-      const IceToken = await hre.ethers.getContractFactory("IceToken");
       const tokenAddr = hre.ethers.utils.getAddress(args.token);
       const fromAddr = hre.ethers.utils.getAddress(args.from);
       const crowdfundingAddress = hre.ethers.utils.getAddress(

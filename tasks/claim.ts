@@ -25,9 +25,9 @@ task("claim", "Claim tokens from the crowdfunding SC")
         crowdfundingAddr
       );
 
-      let tx = await crowdfunding.connect(from).claim(args.campaignId);
+      const tx = await crowdfunding.connect(from).claim(args.campaignId);
       // TODO: make negative condition if tx failed
-      let receipt = await tx.wait();
+      const receipt = await tx.wait();
       const event = receipt.events?.filter((x) => {return x.event == "Claimed"});
       const claimedAmount = event[0].args[2].toString();
       console.log(

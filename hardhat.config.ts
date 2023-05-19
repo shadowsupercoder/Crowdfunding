@@ -12,6 +12,8 @@ import '@typechain/hardhat';
 import '@nomiclabs/hardhat-ethers';
 import '@nomicfoundation/hardhat-toolbox';
 import '@nomicfoundation/hardhat-chai-matchers';
+import 'hardhat-gas-reporter';
+import 'solidity-coverage';
 
 dotenv.config();
 
@@ -23,7 +25,7 @@ const {
 const config: HardhatUserConfig = {
   solidity: "0.8.18",
   gasReporter: {
-    enabled: (REPORT_GAS) ? true : false
+    enabled: (REPORT_GAS==='true') ? true : false
   },
 };
 
