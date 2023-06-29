@@ -1,20 +1,29 @@
-import { time, takeSnapshot } from "@nomicfoundation/hardhat-network-helpers";
+import {
+  time,
+  takeSnapshot,
+  SnapshotRestorer,
+} from "@nomicfoundation/hardhat-network-helpers";
 
 import { expect } from "chai";
 
 import * as hre from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { Crowdfunding, IceToken } from "../typechain-types";
+import {
+  Crowdfunding,
+  IceToken,
+  Crowdfunding__factory,
+  IceToken__factory,
+} from "../typechain-types";
 
 const { ethers } = hre;
 
 describe("Crowdfunding", () => {
-  let snapshot: number;
+  let snapshot: SnapshotRestorer;
   const ONE_DAY: number = 24 * 60 * 60;
-  const fundingGoal = 1e10;
-  const name = "Development";
-  const description = "Funds to create demo projects";
+  const fundingGoal: number = 1e10;
+  const name: string = "Development";
+  const description: string = "Funds to create demo projects";
 
   let owner: SignerWithAddress;
   let alice: SignerWithAddress;
@@ -26,11 +35,12 @@ describe("Crowdfunding", () => {
   before(async () => {
     [owner, alice, bob] = await ethers.getSigners();
     // Deploy contracts
-    const CrowdfundingContract = await ethers.getContractFactory(
-      "Crowdfunding"
-    );
+    const CrowdfundingContract: Crowdfunding__factory =
+      await ethers.getContractFactory("Crowdfunding");
 
-    const IceTokenContract = await ethers.getContractFactory("IceToken");
+    const IceTokenContract: IceToken__factory = await ethers.getContractFactory(
+      "IceToken"
+    );
 
     token = await IceTokenContract.deploy();
     await token.deployed();
@@ -57,7 +67,9 @@ describe("Crowdfunding", () => {
 
   describe("Campaign creation", () => {
     it("The crowdfunding contract can not be deployed with zero addresses", async () => {
-      const cf = await ethers.getContractFactory("Crowdfunding");
+      const cf: Crowdfunding__factory = await ethers.getContractFactory(
+        "Crowdfunding"
+      );
 
       await expect(
         cf.deploy(ethers.constants.AddressZero, owner.address)
@@ -80,9 +92,10 @@ describe("Crowdfunding", () => {
     });
 
     it("Event emits if owner of contract creates campaign", async () => {
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
+
       const result = await crowdfunding
         .connect(owner)
         .createCampaign(fundingGoal, startDate, endDate, name, description);
@@ -96,9 +109,9 @@ describe("Crowdfunding", () => {
       let result = await crowdfunding.getInfo();
       expect(result[0]).to.be.empty; // check indexes before
       expect(result[1]).to.be.empty; // check values before
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
       await crowdfunding
         .connect(owner)
         .createCampaign(fundingGoal, startDate, endDate, name, description);
@@ -121,9 +134,9 @@ describe("Crowdfunding", () => {
     it("Can get the information about certain campaign", async () => {
       await expect(crowdfunding.campaigns(0)).to.be.reverted;
 
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
       await crowdfunding
         .connect(owner)
         .createCampaign(fundingGoal, startDate, endDate, name, description);
@@ -141,9 +154,9 @@ describe("Crowdfunding", () => {
     it("Owner can create a campaign", async () => {
       await expect(crowdfunding.campaigns(0)).to.be.reverted;
 
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
       await expect(
         crowdfunding
           .connect(bob)
@@ -156,9 +169,9 @@ describe("Crowdfunding", () => {
     it("Owner can not create a campaign if start date the same as end date", async () => {
       await expect(crowdfunding.campaigns(0)).to.be.reverted;
 
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + ONE_DAY;
       await expect(
         crowdfunding
           .connect(owner)
@@ -173,9 +186,9 @@ describe("Crowdfunding", () => {
     it("Owner can not create a campaign if start date > end date", async () => {
       await expect(crowdfunding.campaigns(0)).to.be.reverted;
 
-      const currentTime = await time.latest();
-      const startDate = currentTime + 2 * ONE_DAY;
-      const endDate = currentTime + ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + 2 * ONE_DAY;
+      const endDate: number = currentTime + ONE_DAY;
       await expect(
         crowdfunding
           .connect(owner)
@@ -190,9 +203,9 @@ describe("Crowdfunding", () => {
     it("Owner can not create a campaign if start date < current date", async () => {
       await expect(crowdfunding.campaigns(0)).to.be.reverted;
 
-      const currentTime = await time.latest();
-      const startDate = currentTime - 2 * ONE_DAY;
-      const endDate = currentTime + ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime - 2 * ONE_DAY;
+      const endDate: number = currentTime + ONE_DAY;
       await expect(
         crowdfunding
           .connect(owner)
@@ -207,9 +220,9 @@ describe("Crowdfunding", () => {
     it("Can not create a new campaign is max reached (25)", async () => {
       await expect(crowdfunding.campaigns(0)).to.be.reverted;
 
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
       for (let i = 0; i < 25; ++i) {
         await crowdfunding
           .connect(owner)
@@ -230,9 +243,9 @@ describe("Crowdfunding", () => {
     it("Check that the funding goal can not be zero value", async () => {
       await expect(crowdfunding.campaigns(0)).to.be.reverted;
 
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
 
       await expect(
         crowdfunding
@@ -249,9 +262,9 @@ describe("Crowdfunding", () => {
   describe("Fund a campaign", () => {
     it("Check that bob can not top up the campaign without approve", async () => {
       // define a campaign
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
       await crowdfunding
         .connect(owner)
         .createCampaign(fundingGoal, startDate, endDate, name, description);
@@ -268,9 +281,9 @@ describe("Crowdfunding", () => {
 
     it("Event emits if bob make a top up", async () => {
       // define a campaign
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
       await crowdfunding
         .connect(owner)
         .createCampaign(fundingGoal, startDate, endDate, name, description);
@@ -283,7 +296,7 @@ describe("Crowdfunding", () => {
         0, // campaignId
         1e10 // amount
       );
-      const txTime = await time.latest();
+      const txTime: number = await time.latest();
 
       await expect(result)
         .to.emit(crowdfunding, "Pledged")
@@ -292,9 +305,9 @@ describe("Crowdfunding", () => {
 
     it("Check that bob and alice can top up the active campaign", async () => {
       // define a campaign
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
       await crowdfunding
         .connect(owner)
         .createCampaign(fundingGoal, startDate, endDate, name, description);
@@ -324,9 +337,9 @@ describe("Crowdfunding", () => {
 
     it("Alice can top up the campaign that already reached fundingGoal but not its end time", async () => {
       // define a campaign
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
       await crowdfunding
         .connect(owner)
         .createCampaign(fundingGoal, startDate, endDate, name, description);
@@ -356,9 +369,9 @@ describe("Crowdfunding", () => {
 
     it("Alice can not claim funds before campaigns is finished", async () => {
       // define a campaign
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
       await crowdfunding
         .connect(owner)
         .createCampaign(fundingGoal, startDate, endDate, name, description);
@@ -385,9 +398,9 @@ describe("Crowdfunding", () => {
 
     it("Check that alice can not top up non-active campaign", async () => {
       // define a campaign
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
       await crowdfunding
         .connect(owner)
         .createCampaign(fundingGoal, startDate, endDate, name, description);
@@ -407,9 +420,9 @@ describe("Crowdfunding", () => {
 
     it("Check that alice can not top up a campaign using 0 amount as parameter", async () => {
       // define a campaign
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
       await crowdfunding
         .connect(owner)
         .createCampaign(fundingGoal, startDate, endDate, name, description);
@@ -429,9 +442,9 @@ describe("Crowdfunding", () => {
 
     it("Check that alice can not top up a non-exist campaign", async () => {
       // define a campaign
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
       await crowdfunding
         .connect(owner)
         .createCampaign(fundingGoal, startDate, endDate, name, description);
@@ -453,12 +466,12 @@ describe("Crowdfunding", () => {
   describe("Claim funds", () => {
     it("Users can claim their funds back after endDate of campaigns (raise not reached)", async () => {
       // define a campaign
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
 
-      const startDate2 = currentTime + 1.5 * ONE_DAY;
-      const endDate2 = currentTime + 4 * ONE_DAY;
+      const startDate2: number = currentTime + 1.5 * ONE_DAY;
+      const endDate2: number = currentTime + 4 * ONE_DAY;
 
       // create campaign 1
       await crowdfunding
@@ -519,27 +532,27 @@ describe("Crowdfunding", () => {
 
       await time.increase(4 * ONE_DAY);
 
-      result = await crowdfunding.connect(alice).claim(0);
+      let tx = await crowdfunding.connect(alice).claim(0);
       let txTime = await time.latest();
-      await expect(result)
+      await expect(tx)
         .to.emit(crowdfunding, "Claimed")
         .withArgs(alice.address, 0, 1e7, txTime);
 
-      result = await crowdfunding.connect(alice).claim(1);
+      tx = await crowdfunding.connect(alice).claim(1);
       txTime = await time.latest();
-      await expect(result)
+      await expect(tx)
         .to.emit(crowdfunding, "Claimed")
         .withArgs(alice.address, 1, 1e3, txTime);
 
-      result = await crowdfunding.connect(bob).claim(0);
+      tx = await crowdfunding.connect(bob).claim(0);
       txTime = await time.latest();
-      await expect(result)
+      await expect(tx)
         .to.emit(crowdfunding, "Claimed")
         .withArgs(bob.address, 0, 1e6, txTime);
 
-      result = await crowdfunding.connect(bob).claim(1);
+      tx = await crowdfunding.connect(bob).claim(1);
       txTime = await time.latest();
-      await expect(result)
+      await expect(tx)
         .to.emit(crowdfunding, "Claimed")
         .withArgs(bob.address, 1, 1e3, txTime);
 
@@ -558,12 +571,12 @@ describe("Crowdfunding", () => {
 
     it("Users can not claim their funds back after endDate of campaigns (raise reached)", async () => {
       // define a campaign
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
 
-      const startDate2 = currentTime + 1.5 * ONE_DAY;
-      const endDate2 = currentTime + 4 * ONE_DAY;
+      const startDate2: number = currentTime + 1.5 * ONE_DAY;
+      const endDate2: number = currentTime + 4 * ONE_DAY;
 
       // create campaign 1
       await crowdfunding
@@ -648,10 +661,10 @@ describe("Crowdfunding", () => {
       );
 
       expect(await token.balanceOf(alice.address)).to.be.equal(
-        aliceBalanceBefore - 1e10 - 1e10
+        aliceBalanceBefore.sub(1e10).sub(1e10)
       );
       expect(await token.balanceOf(bob.address)).to.be.equal(
-        bobBalanceBefore - 1e9 - 1e10
+        bobBalanceBefore.sub(1e9).sub(1e10)
       );
       expect(await token.balanceOf(crowdfunding.address)).to.be.equal(
         1e9 + 3 * 1e10
@@ -660,12 +673,12 @@ describe("Crowdfunding", () => {
 
     it("Only owner can get funds back after funding goal is met", async () => {
       // define a campaign
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
 
-      const startDate2 = currentTime + 1.5 * ONE_DAY;
-      const endDate2 = currentTime + 4 * ONE_DAY;
+      const startDate2: number = currentTime + 1.5 * ONE_DAY;
+      const endDate2: number = currentTime + 4 * ONE_DAY;
 
       // create campaign 1
       await crowdfunding
@@ -732,28 +745,28 @@ describe("Crowdfunding", () => {
         "Ownable: caller is not the owner"
       );
 
-      result = await crowdfunding.connect(owner).getTokens(0);
+      let tx = await crowdfunding.connect(owner).getTokens(0);
       let txTime = await time.latest();
-      await expect(result)
+      await expect(tx)
         .to.emit(crowdfunding, "ClaimedByOwner")
         .withArgs(owner.address, 0, 101e9, txTime);
 
-      result = await crowdfunding.connect(owner).getTokens(1);
+      tx = await crowdfunding.connect(owner).getTokens(1);
       txTime = await time.latest();
-      await expect(result)
+      await expect(tx)
         .to.emit(crowdfunding, "ClaimedByOwner")
         .withArgs(owner.address, 1, 2e10, txTime);
 
       expect(await token.balanceOf(owner.address)).to.be.equal(
-        ownerBalanceBefore + expectedBalance
+        ownerBalanceBefore.add(expectedBalance)
       );
     });
 
     it("Owner can not execute get funds twice", async () => {
       // define a campaign
-      const currentTime = await time.latest();
-      const startDate = currentTime + ONE_DAY;
-      const endDate = currentTime + 2 * ONE_DAY;
+      const currentTime: number = await time.latest();
+      const startDate: number = currentTime + ONE_DAY;
+      const endDate: number = currentTime + 2 * ONE_DAY;
 
       // create campaign
       await crowdfunding
@@ -791,7 +804,7 @@ describe("Crowdfunding", () => {
       await crowdfunding.connect(owner).getTokens(0);
 
       expect(await token.balanceOf(owner.address)).to.be.equal(
-        ownerBalanceBefore + expectedBalance
+        ownerBalanceBefore.add(expectedBalance)
       );
 
       await expect(crowdfunding.connect(owner).getTokens(0)).to.be.revertedWith(

@@ -20,7 +20,7 @@ const { ethers, run } = hre;
 */
 describe("Crowdfunding DEMOs tests using tasks \n", () => {
   const ONE_DAY: number = 24 * 60 * 60;
-  const fundingGoal = 1e10;
+  const fundingGoal: number = 1e10;
   let tokenAddr: string;
   let crowdfundingAddr: string;
 
@@ -64,9 +64,9 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     );
 
     // prepared data for a "Development" and "New" campaign
-    const currentTime = await time.latest();
-    let startDate = currentTime + ONE_DAY; // next day
-    let endDate = currentTime + 2 * ONE_DAY; // current datetime + 2 days
+    const currentTime: number = await time.latest();
+    let startDate: number = currentTime + ONE_DAY; // next day
+    let endDate: number = currentTime + 2 * ONE_DAY; // current datetime + 2 days
 
     // create the "Development" campaign
     // TODO: check why the type in tasks requires string instead of numbers.
@@ -120,7 +120,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     let ownerBalAfter = await token.balanceOf(owner.address);
 
     expect(ownerBalAfter).to.be.equal(fundingGoal);
-    expect(fundingGoal).to.be.equal(ownerBalAfter - ownerBalBefore);
+    expect(fundingGoal).to.be.equal(ownerBalAfter.sub(ownerBalBefore));
 
     console.log(`\t\t 📜 Bob's full address is \x1b[32m${bob.address}\x1b[0m`);
     console.log(
@@ -140,7 +140,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     let bobBalance = await token.balanceOf(bob.address);
 
     expect(ownerBalAfter).to.be.equal(fundingGoal / 2);
-    expect(bobBalance).to.be.equal(bobBalanceBefore + fundingGoal / 2);
+    expect(bobBalance).to.be.equal(bobBalanceBefore.add(fundingGoal / 2));
     logBalanceMsg("Bob", bobBalance.toString());
 
     const aliceBalanceBefore = await token.balanceOf(alice.address);
@@ -157,7 +157,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     let aliceBalance = await token.balanceOf(alice.address);
 
     expect(ownerBalAfter).to.be.equal(0);
-    expect(aliceBalance).to.be.equal(aliceBalanceBefore + fundingGoal / 2);
+    expect(aliceBalance).to.be.equal(aliceBalanceBefore.add(fundingGoal / 2));
 
     logBalanceMsg("Alice", aliceBalance.toString());
 
@@ -215,11 +215,11 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
       from: alice.address,
       crowdfunding: crowdfundingAddr,
       id: "0",
-      amount: (aliceBalance / 2).toString(),
+      amount: aliceBalance.div(2).toString(),
     });
 
     expect(await token.balanceOf(crowdfundingAddr)).to.be.equal(
-      bobBalance.add(aliceBalance / 2)
+      bobBalance.add(aliceBalance.div(2))
     );
 
     // increase datetime to the 3rd day
@@ -231,7 +231,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
       from: alice.address,
       crowdfunding: crowdfundingAddr,
       id: "1",
-      amount: (aliceBalance / 2).toString(),
+      amount: aliceBalance.div(2).toString(),
     });
 
     expect(await token.balanceOf(crowdfundingAddr)).to.be.equal(
@@ -253,9 +253,9 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     logBalanceMsg("Alice", aliceBalance.toString());
 
     // return SC balances
-    result = await crowdfunding.getInfo();
-    const indexes = result[0];
-    let infos = result[1];
+    let info = await crowdfunding.getInfo();
+    const indexes = info[0];
+    let infos = info[1];
     for (let i = 0; i < infos.length; ++i) {
       console.log(`\t\t 📜 Info campaign '${infos[i][5]}':`);
       console.log(
@@ -315,8 +315,8 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     logBalanceMsg("Alice", aliceBalance.toString());
 
     // check SC status
-    result = await crowdfunding.getInfo();
-    infos = result[1];
+    info = await crowdfunding.getInfo();
+    infos = info[1];
     for (let i = 0; i < infos.length; ++i) {
       expect(infos[i][0]).to.be.equal(false);
     }
@@ -350,7 +350,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     let ownerBalAfter = await token.balanceOf(owner.address);
 
     expect(ownerBalAfter).to.be.equal(totalAmount);
-    expect(fundingGoal * 4).to.be.equal(ownerBalAfter - ownerBalBefore);
+    expect(fundingGoal * 4).to.be.equal(ownerBalAfter.sub(ownerBalBefore));
 
     console.log(`\t\t 📜 Bob's full address is \x1b[32m${bob.address}\x1b[0m`);
     console.log(
@@ -370,7 +370,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     let bobBalance = await token.balanceOf(bob.address);
 
     expect(ownerBalAfter).to.be.equal(totalAmount - amountToDevBob);
-    expect(bobBalance).to.be.equal(bobBalanceBefore + amountToDevBob);
+    expect(bobBalance).to.be.equal(bobBalanceBefore.add(amountToDevBob));
     logBalanceMsg("Bob", bobBalance.toString());
 
     const aliceBalanceBefore = await token.balanceOf(alice.address);
@@ -446,11 +446,11 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
       from: alice.address,
       crowdfunding: crowdfundingAddr,
       id: "0",
-      amount: (aliceBalance / 2).toString(),
+      amount: aliceBalance.div(2).toString(),
     });
 
     expect(await token.balanceOf(crowdfundingAddr)).to.be.equal(
-      bobBalance.add(aliceBalance / 2)
+      bobBalance.add(aliceBalance.div(2))
     );
 
     // increase datetime to the 3rd day
@@ -462,7 +462,7 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
       from: alice.address,
       crowdfunding: crowdfundingAddr,
       id: "1",
-      amount: (aliceBalance / 2).toString(),
+      amount: aliceBalance.div(2).toString(),
     });
 
     expect(await token.balanceOf(crowdfundingAddr)).to.be.equal(
@@ -484,9 +484,9 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     logBalanceMsg("Alice", aliceBalance.toString());
 
     // return SC balances
-    result = await crowdfunding.getInfo();
-    const indexes = result[0];
-    let infos = result[1];
+    let info = await crowdfunding.getInfo();
+    const indexes = info[0];
+    let infos = info[1];
     for (let i = 0; i < infos.length; ++i) {
       console.log(`\t\t 📜 Info campaign '${infos[i][5]}':`);
       console.log(
@@ -559,8 +559,8 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     logBalanceMsg("Owner", ownerBal.toString());
 
     // check SC status (is finished)
-    result = await crowdfunding.getInfo();
-    infos = result[1];
+    info = await crowdfunding.getInfo();
+    infos = info[1];
     expect(infos[1][0]).to.be.equal(false);
     expect(infos[0][0]).to.be.equal(true);
     // -------> Information block ends <-------
