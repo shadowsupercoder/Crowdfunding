@@ -123,10 +123,10 @@ describe("Crowdfunding", () => {
       expect(infos.length).to.be.equal(1);
       expect(indexes[0]).to.be.equal(0); // check index
       expect(infos[0][0]).to.be.equal(false);
-      expect(infos[0][1]).to.be.equal(1e10); // check fundingGoal
-      expect(infos[0][2]).to.be.equal(0); // check totalRaise
-      expect(infos[0][3]).to.be.equal(startDate);
-      expect(infos[0][4]).to.be.equal(endDate);
+      expect(infos[0][3]).to.be.equal(1e10); // check fundingGoal
+      expect(infos[0][4]).to.be.equal(0); // check totalRaise
+      expect(infos[0][1]).to.be.equal(startDate);
+      expect(infos[0][2]).to.be.equal(endDate);
       expect(infos[0][5]).to.be.equal(name);
       expect(infos[0][6]).to.be.equal(description);
     });
@@ -143,10 +143,10 @@ describe("Crowdfunding", () => {
 
       const result = await crowdfunding.campaigns(0);
       expect(result[0]).to.be.equal(false);
-      expect(result[1]).to.be.equal(1e10); // check fundingGoal
-      expect(result[2]).to.be.equal(0); // check totalRaise
-      expect(result[3]).to.be.equal(startDate);
-      expect(result[4]).to.be.equal(endDate);
+      expect(result[3]).to.be.equal(1e10); // check fundingGoal
+      expect(result[4]).to.be.equal(0); // check totalRaise
+      expect(result[1]).to.be.equal(startDate);
+      expect(result[2]).to.be.equal(endDate);
       expect(result[5]).to.be.equal(name);
       expect(result[6]).to.be.equal(description);
     });
@@ -331,8 +331,8 @@ describe("Crowdfunding", () => {
       const result = await crowdfunding.getInfo();
       const infos = result[1];
       expect(infos.length).to.be.equal(1);
-      expect(infos[0][1]).to.be.equal(1e10); // check fundingGoal
-      expect(infos[0][2]).to.be.equal(2e9); // check totalRaise
+      expect(infos[0][3]).to.be.equal(1e10); // check fundingGoal
+      expect(infos[0][4]).to.be.equal(2e9); // check totalRaise
     });
 
     it("Alice can top up the campaign that already reached fundingGoal but not its end time", async () => {
@@ -363,8 +363,8 @@ describe("Crowdfunding", () => {
       const result = await crowdfunding.getInfo();
       const infos = result[1];
       expect(infos.length).to.be.equal(1);
-      expect(infos[0][1]).to.be.equal(1e10); // check fundingGoal
-      expect(infos[0][2]).to.be.equal(3e10); // check totalRaise
+      expect(infos[0][3]).to.be.equal(1e10); // check fundingGoal
+      expect(infos[0][4]).to.be.equal(3e10); // check totalRaise
     });
 
     it("Alice can not claim funds before campaigns is finished", async () => {
@@ -389,7 +389,7 @@ describe("Crowdfunding", () => {
       const result = await crowdfunding.getInfo();
       const infos = result[1];
       expect(infos.length).to.be.equal(1);
-      expect(infos[0][2]).to.be.equal(1e9); // check totalRaise
+      expect(infos[0][4]).to.be.equal(1e9); // check totalRaise
 
       await expect(crowdfunding.claim(0)).to.be.revertedWith(
         "The campaign has not finished yet"
@@ -509,11 +509,11 @@ describe("Crowdfunding", () => {
       let result = await crowdfunding.getInfo();
       const infos = result[1];
       expect(infos.length).to.be.equal(2);
-      expect(infos[0][1]).to.be.equal(1e10); // check fundingGoal1
-      expect(infos[0][2]).to.be.equal(11e6); // check totalRaise1
+      expect(infos[0][3]).to.be.equal(1e10); // check fundingGoal1
+      expect(infos[0][4]).to.be.equal(11e6); // check totalRaise1
 
-      expect(infos[1][1]).to.be.equal(2e10); // check fundingGoal2
-      expect(infos[1][2]).to.be.equal(2e3); // check totalRaise2
+      expect(infos[1][3]).to.be.equal(2e10); // check fundingGoal2
+      expect(infos[1][4]).to.be.equal(2e3); // check totalRaise2
       expect(await token.balanceOf(crowdfunding.address)).to.be.equal(
         2e3 + 11e6
       ); // check totalRaise
@@ -614,11 +614,11 @@ describe("Crowdfunding", () => {
       const result = await crowdfunding.getInfo();
       const infos = result[1];
       expect(infos.length).to.be.equal(2);
-      expect(infos[0][1]).to.be.equal(1e10); // check fundingGoal1
-      expect(infos[0][2]).to.be.equal(11e9); // check totalRaise1
+      expect(infos[0][3]).to.be.equal(1e10); // check fundingGoal1
+      expect(infos[0][4]).to.be.equal(11e9); // check totalRaise1
 
-      expect(infos[1][1]).to.be.equal(2e10); // check fundingGoal2
-      expect(infos[1][2]).to.be.equal(2e10); // check totalRaise2
+      expect(infos[1][3]).to.be.equal(2e10); // check fundingGoal2
+      expect(infos[1][4]).to.be.equal(2e10); // check totalRaise2
       expect(await token.balanceOf(crowdfunding.address)).to.be.equal(
         11e9 + 2e10
       ); // check total
@@ -732,12 +732,12 @@ describe("Crowdfunding", () => {
       );
 
       let result = await crowdfunding.campaigns(0);
-      expect(result[1]).to.be.equal(1e10); // goal
-      expect(result[2]).to.be.equal(101e9); // totalRaise
+      expect(result[3]).to.be.equal(1e10); // goal
+      expect(result[4]).to.be.equal(101e9); // totalRaise
 
       result = await crowdfunding.campaigns(1);
-      expect(result[1]).to.be.equal(2e10); // goal
-      expect(result[2]).to.be.equal(2e10); // totalRaise
+      expect(result[3]).to.be.equal(2e10); // goal
+      expect(result[4]).to.be.equal(2e10); // totalRaise
 
       // check that owner can get tokens after the end Date
       const ownerBalanceBefore = await token.balanceOf(owner.address);

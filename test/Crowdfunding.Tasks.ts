@@ -102,12 +102,12 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
 
   it("📄 DEMO 1: user can claim his funds back if funds goal isn't met\n", async () => {
     let result = await crowdfunding.campaigns(0);
-    expect(result[1]).to.be.equal(fundingGoal); // goal
-    expect(result[2]).to.be.equal(0); // totalRaise
+    expect(result[3]).to.be.equal(fundingGoal); // goal
+    expect(result[4]).to.be.equal(0); // totalRaise
 
     result = await crowdfunding.campaigns(1);
-    expect(result[1]).to.be.equal(fundingGoal); // goal
-    expect(result[2]).to.be.equal(0); // totalRaise
+    expect(result[3]).to.be.equal(fundingGoal); // goal
+    expect(result[4]).to.be.equal(0); // totalRaise
 
     let ownerBalBefore = await token.balanceOf(owner.address);
 
@@ -265,12 +265,12 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
       );
       console.log(
         `\t\t   🎯\x1b[33m`,
-        infos[i][1].toString(), // fundingGoal
+        infos[i][3].toString(), // fundingGoal
         "\x1b[0m funding goal"
       );
       console.log(
         `\t\t   🌱\x1b[33m`,
-        infos[i][2].toString(), // totalRaise
+        infos[i][4].toString(), // totalRaise
         `\x1b[0m raised`
       );
       expect(infos[i][0]).to.be.equal(false);
@@ -333,12 +333,12 @@ describe("Crowdfunding DEMOs tests using tasks \n", () => {
     const totalAmount = amountToDevBob + amountToDevAlice + amountToNewAlice;
 
     let result = await crowdfunding.campaigns(0);
-    expect(result[1]).to.be.equal(fundingGoal); // goal
-    expect(result[2]).to.be.equal(0); // totalRaise
+    expect(result[3]).to.be.equal(fundingGoal); // goal
+    expect(result[4]).to.be.equal(0); // totalRaise
 
     result = await crowdfunding.campaigns(1);
-    expect(result[1]).to.be.equal(fundingGoal); // goal
-    expect(result[2]).to.be.equal(0); // totalRaise
+    expect(result[3]).to.be.equal(fundingGoal); // goal
+    expect(result[4]).to.be.equal(0); // totalRaise
 
     let ownerBalBefore = await token.balanceOf(owner.address);
     // mint 4 times `fundingGoal` tokens to the owner

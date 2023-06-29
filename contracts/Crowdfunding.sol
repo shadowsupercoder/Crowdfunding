@@ -18,10 +18,10 @@ contract Crowdfunding is Ownable {
     struct CampaignInfo {
         // sets as `true` only in case if owner claimed funds (goal for the fundraising is met)
         bool finished;
+        uint32 startDate;
+        uint32 endDate;
         uint256 fundingGoal;
         uint256 totalRaised;
-        uint256 startDate;
-        uint256 endDate;
         string name;
         string description;
     }
@@ -38,8 +38,8 @@ contract Crowdfunding is Ownable {
     event CampaignCreated(
         address indexed sender,
         uint256 fundingGoal,
-        uint256 startDate,
-        uint256 endDate
+        uint32 startDate,
+        uint32 endDate
     );
 
     // emits when the user transfers funds to the smart contract
@@ -86,7 +86,7 @@ contract Crowdfunding is Ownable {
      * @param _startDate is an ID of a campaign
      * @param _endDate is an ID of a campaign
      */
-    modifier isValid(uint256 _startDate, uint256 _endDate) {
+    modifier isValid(uint32 _startDate, uint32 _endDate) {
         require(
             _startDate > block.timestamp,
             'The campaign`s start date must be more than current date'
@@ -150,8 +150,8 @@ contract Crowdfunding is Ownable {
      */
     function createCampaign(
         uint256 _fundingGoal,
-        uint256 _startDate,
-        uint256 _endDate,
+        uint32 _startDate,
+        uint32 _endDate,
         string memory _name,
         string memory _description
     ) external onlyOwner isValid(_startDate, _endDate) {
@@ -161,10 +161,10 @@ contract Crowdfunding is Ownable {
         campaigns.push(
             CampaignInfo({
                 finished: false,
-                totalRaised: 0,
-                fundingGoal: _fundingGoal,
                 startDate: _startDate,
                 endDate: _endDate,
+                totalRaised: 0,
+                fundingGoal: _fundingGoal,
                 name: _name,
                 description: _description
             })
